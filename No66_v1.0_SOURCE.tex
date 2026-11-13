@@ -1,0 +1,314 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage[a4paper,hmargin=22mm,vmargin=18mm]{geometry}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,amsmath,amssymb,amsthm,booktabs,array,enumitem,hyperref,microtype}
+\hypersetup{colorlinks=true,linkcolor=blue,urlcolor=blue,citecolor=blue,pdftitle={Exact Outer Multiset Dimensions of Fibonacci Cubes Through Dimension Nine: An Exact Three-Landmark Ordered--Unordered Gap},pdfauthor={Ryutaro Yonezu}}
+\emergencystretch=3em
+\newtheorem{theorem}{Theorem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newcommand{\odim}{\operatorname{odim}}
+\newcommand{\md}{\operatorname{md}}
+\newcommand{\G}{\Gamma}
+\newcommand{\F}{\mathcal{F}}
+\newcommand{\rep}{\mathcal{M}}
+\title{Exact Outer Multiset Dimensions of Fibonacci Cubes Through Dimension Nine\\[2mm]
+\large An Exact Three-Landmark Ordered--Unordered Gap}
+\author{Ryutaro Yonezu\\\small Independent Researcher}
+\date{13 November 2026\\\small Preprint v1.0 --- not human peer-reviewed}
+\begin{document}
+\maketitle
+\begin{abstract}
+Let $\G_n$ be the Fibonacci cube induced by binary words of length $n$ with no consecutive $1$s.
+We determine the outer multiset, ordinary metric, and full multiset dimensions
+for $1\leq n\leq9$ by exhaustive, exact finite computation.
+In particular, $\odim(\G_n)=1,1,2,3,3,4,5,5,7$, respectively.
+For the ninth Fibonacci cube we obtain the ordinary metric dimension $\dim(\G_9)=4$
+and both the outer and full multiset dimensions $\odim(\G_9)=\md(\G_9)=7$.
+The full-multiset versus ordinary-metric gap is at most one through $n=8$,
+but is exactly three at $n=9$. This comparison requires all vertices to be
+distinguished, so the outer relaxation does not account for the latter gap.
+The lower bound at dimension nine uses exhaustive rejection of all
+$\binom{89}{6}=581{,}106{,}988$ six-landmark sets, with an independent encoding-based computation,
+while the upper bound comes from an explicit seven-landmark certificate.
+We also give an explicit four-landmark outer multiset resolving set of $\G_6$ that loses
+its resolving property when one additional landmark is added.
+All conclusions are about the stated finite instances, not a formula for arbitrary $n$.
+This is an unrefereed preprint; historical novelty remains unconfirmed.
+\end{abstract}
+\noindent\textbf{Keywords:} Fibonacci cube; metric dimension; outer multiset dimension; multiset dimension; resolving set; computer-assisted proof; multiset distance representation.\\
+\textbf{MSC (provisional):} 05C12, 05C85, 11B39.
+
+\section{Introduction and scope}
+A graph's metric dimension is defined using \emph{ordered} distance vectors to a fixed set of landmarks.
+The outer multiset dimension of Gil-Pons and coauthors~\cite{GilPons2019}
+instead records only the multiset of landmark distances, and demands separation only
+among vertices outside the landmark set; see also recent surveys~\cite{Farhan2026,Albejani2026}.
+These are different graph invariants. The Fibonacci cube is a classical induced subgraph of a hypercube,
+whose vertices are counted by Fibonacci numbers; see~\cite{Klavzar2013,Cabello2011}.
+
+The present paper gives an exactly reproducible \emph{finite classification} through dimension nine.
+Its main point is the exact gap between \emph{ordered} and \emph{unordered}
+landmark-distance information for $\G_9$ when \emph{all} vertices must be distinguished.
+We show that the optimal seven-landmark outer-multiset witness in fact distinguishes
+every vertex, including the landmarks themselves. This paper does not claim a uniform formula, a new asymptotic bound,
+or priority over undiscovered or incompletely checked literature.
+In particular, the \emph{Fibonacci dimension} of~\cite{Cabello2011} concerns
+isometric \emph{embedding} into a Fibonacci cube, and is not the usual metric dimension.
+Independent resolving sets studied in~\cite{Monica2017} are also a different parameter.
+Araujo-Pardo and coauthors~\cite{Araujo2026} give maximum-order graph
+constructions for specified diameter and multiset basis size, and determine the
+outer multiset dimension for circulants $C_n(1,2)$. Those results do not state the
+Fibonacci-cube values below, although a full audit of indirect implications remains open.
+A broader literature audit, particularly of all implications of prior metric-dimension results, remains pending.
+
+\section{Definitions and isometry}
+Let $\F_n=\{x\in\{0,1\}^n:x_ix_{i+1}=0\ (1\le i<n)\}$ and
+let $\G_n$ be the induced subgraph of the $n$-cube on $\F_n$, with two vertices adjacent
+when their Hamming distance equals one. With $F_0=0,F_1=1$ and $F_{m+2}=F_{m+1}+F_m$,
+$|V(\G_n)|=F_{n+2}$.
+
+For $S=\{s_1,\ldots,s_k\}\subseteq V(G)$ and $v\in V(G)$, put
+$\rep(v\mid S)=\{\!\{d_G(v,s):s\in S\}\!\}$, the \emph{unordered} multiset of distances.
+The set $S$ is an \emph{outer multiset resolving set} if
+$\rep(u\mid S)\ne\rep(v\mid S)$ for all distinct $u,v\in V(G)\setminus S$.
+The minimum possible $|S|$ is $\odim(G)$.
+A \emph{full multiset resolving set} distinguishes \emph{every} pair of vertices
+(including those in $S$) by their unordered distance multisets; its minimum size
+is denoted $\md(G)$, or infinity if no such set exists. Every full multiset resolving
+set is outer multiset resolving, so $\odim(G)\le\md(G)$.
+For comparison, a usual resolving set distinguishes \emph{all} vertices by the ordered vector
+$(d_G(v,s_1),\ldots,d_G(v,s_k))$; its minimum size is $\dim(G)$.
+
+\begin{lemma}[Isometry]
+For any $x,y\in\F_n$, $d_{\G_n}(x,y)=d_H(x,y)$.
+\end{lemma}
+\begin{proof}
+Every edge changes one bit, so graph distance is at least Hamming distance.
+Starting from $x$, delete all $1$s in positions where $y$ has a $0$.
+Every intermediate word still avoids consecutive $1$s.
+Then insert, one by one, the remaining $1$s specified by $y$.
+At each step the set of $1$ positions is a subset of that of $y$, so it is legal.
+This path changes each differing bit exactly once, giving the reverse inequality.
+\end{proof}
+
+\section{Exact finite results}
+\begin{theorem}[Exact finite resolving parameters]\label{thm:table}
+For the Fibonacci cubes $\G_n$ with $1\le n\le9$,
+\[
+\begin{array}{c|rrrrrrrrr}
+ n&1&2&3&4&5&6&7&8&9\\\hline
+ |V(\G_n)|&2&3&5&8&13&21&34&55&89\\
+ \dim(\G_n)&1&1&2&2&3&3&4&4&4\\
+ \odim(\G_n)&1&1&2&3&3&4&5&5&7\\
+ \md(\G_n)&1&1&3&3&3&4&5&5&7
+\end{array}.
+\]
+These are finite, computer-assisted equalities, supported by independent BFS
+enumeration through $n=8$ and by the separately audited complete certificates
+at $n=9$; no formula for larger $n$ is asserted.
+\end{theorem}
+
+\begin{theorem}[Exact nine-dimensional separation]\label{thm:gap}
+For the ninth Fibonacci cube,
+\[
+\dim(\G_9)=4,\qquad
+\odim(\G_9)=\md(\G_9)=7,\qquad
+\md(\G_9)-\dim(\G_9)=3.
+\]
+The lower bounds are finite exhaustive computational certificates, not general-$n$ structural bounds.
+In particular, the gap of three holds between the ordinary \emph{ordered} metric dimension
+and the full \emph{unordered} multiset dimension, independently of the outer relaxation.
+\end{theorem}
+
+\subsection{Explicit upper certificates}\label{sec:witness}
+For $\G_8$, a full multiset resolving set of size five is
+\[
+S_8=\{01001010,01010001,01010010,01010101,10010101\}.
+\]
+The independent BFS verifier checks all $\binom{55}{5}=3{,}478{,}761$
+five-element sets and finds exactly two full multiset resolving sets.
+A usual four-landmark resolving set is
+\[
+R_8=\{00000100,00101001,01001010,10100010\}.
+\]
+The same verifier exhaustively excludes all smaller cardinalities for both
+parameters. Consequently $\dim(\G_8)=4$ and $\md(\G_8)=5$.
+Together with Theorem~\ref{thm:gap}, this exhibits a jump in the
+ordered--unordered gap from one at $n=8$ to three at $n=9$.
+
+All words below are length-nine vertices of $\G_9$.
+An outer multiset resolving set of size seven is
+\begin{align*}
+S_9=\{&010101000,\ 010100001,\ 010101010,\ 100101010,\\
+&010001001,\ 000100100,\ 010010010\}.
+\end{align*}
+The exact BFS-based verifier checks that the $89-7=82$ vertices outside $S_9$
+have pairwise distinct sorted distance lists. A new independent verifier further checks
+that \emph{all 89} vertices of $\G_9$, \emph{including the seven landmarks},
+have pairwise distinct unordered distance multisets. Therefore $S_9$ is a full
+multiset resolving set, and $\md(\G_9)\le7$. The previously established
+$\odim(\G_9)=7$ and $\odim(G)\le\md(G)$ imply $\md(\G_9)=7$.
+An ordinary (ordered) four-landmark resolving set is
+\[
+R_9=\{000101001,\ 010010101,\ 100100101,\ 101010001\}.
+\]
+Its four-component ordered distance vectors are pairwise distinct for all $89$ vertices.
+The frozen witness script additionally contains one explicit outer resolving set for
+\emph{every} row of Theorem~\ref{thm:table}, as well as upper certificates
+$\odim(\G_{10})\le7$ and $\odim(\G_{11})\le9$.
+The latter two are \emph{upper bounds only} and are not asserted to be exact.
+
+\subsection{Exhaustive lower certificates}\label{sec:exhaust}
+For $n\le6$, a frozen Python verifier independently constructs the graph and
+its BFS distance matrix, and enumerates every $k$-subset for $0\le k<\odim(\G_n)$.
+A new, separately written C++17 verifier constructs BFS distances for every
+$1\le n\le8$, checks all pairs against Hamming distance, and exhaustively
+excludes every landmark-set size below each reported value of $\dim$ and $\md$.
+For $\md(\G_8)$ it checks all five-element sets, not merely until a witness
+is found, and records exactly two successes. Multiset signatures are represented
+in base seven (with no carries for the tested landmark sizes), unlike the frozen
+16-adic implementation.
+For $n=7,8,9$ the source C++17 verifier tests all $k$-subsets for $2\le k$ below
+the claimed optimum; the complete counts are as follows.
+\begin{center}
+\begin{tabular}{@{}rrrl@{}}\toprule
+$n$ & $k$ & $\binom{F_{n+2}}{k}$ & Result \\\midrule
+7 & 2 & 561 & NONE \\
+7 & 3 & 5,984 & NONE \\
+7 & 4 & 46,376 & NONE \\
+8 & 2 & 1,485 & NONE \\
+8 & 3 & 26,235 & NONE \\
+8 & 4 & 341,055 & NONE \\
+9 & 2 & 3,916 & NONE \\
+9 & 3 & 113,564 & NONE \\
+9 & 4 & 2,441,626 & NONE \\
+9 & 5 & 41,507,642 & NONE \\
+9 & 6 & 581,106,988 & NONE \\\bottomrule
+\end{tabular}
+\end{center}
+The cases $k=0$ are impossible because $\G_n$ has more than one vertex.
+For $k=1$ and $n\ge3$, the exterior contains $F_{n+2}-1>n$
+vertices, but a single landmark yields at most $n$ distinct positive distances.
+Thus $k=1$ is also impossible for $n=7,8,9$. All smaller $k$ are therefore excluded
+\emph{individually}; the outer-multiset property is not assumed to be monotone under adding landmarks.
+
+The original C++ enumerator partitions the $k$-subsets by the first two ordered indices and
+recursively lists all strictly increasing suffixes. For each subset, it excludes the
+landmarks, computes the multiset-distance signature of every outside vertex,
+and rejects the subset on the first repeated signature.
+For $n\le9$ and $k\le6$, a distance histogram is stored in base $16$
+(one four-bit counter per possible distance). No counter can exceed six,
+so there are no carries; every signature has an exact, collision-free representation.
+A per-subset open-addressing table is used only for checking equality of those signatures.
+In every NONE case the reported number of tested subsets equals the binomial coefficient.
+
+As a differential check, a separately implemented C++20 program encodes each six-landmark
+distance histogram in \emph{base seven}, as the sum of powers $7^{d(v,s)}$.
+Because all multiplicities are at most six, there are no carries in base seven.
+The largest relevant sum is at most $6\cdot7^9<2^{32}$.
+It independently rejects all $581{,}106{,}988$ possible six-element subsets of $V(\G_9)$.
+The differing encodings reduce dependence on a single implementation of the distance multiset.
+
+Finally, an independent C++17 verifier checks all $\binom{89}{3}=113{,}564$ ordered-distance
+three-landmark subsets, finding none resolving, and explicitly verifies a four-landmark
+witness. Unlike outer multiset resolution, the ordinary resolving property \emph{is}
+monotone under enlarging the landmark set, so rejecting all three-element sets excludes
+all smaller sizes. Together these checks prove Theorem~\ref{thm:gap} within the stated
+computer-assisted proof model.
+
+\section{Failure of upward closure of outer multiset resolving sets}
+\begin{proposition}\label{prop:nonmono}
+There exists an outer multiset resolving set $S$ of $\G_6$ and a proper superset
+$T\supset S$ that is not outer multiset resolving.
+\end{proposition}
+\begin{proof}
+Set
+\[
+S=\{001010,010001,010010,010101\},\qquad
+T=S\cup\{000001\}.
+\]
+Direct enumeration of the $21$ vertices of $\G_6$, using the isometric Hamming metric,
+shows that all $17$ vertices outside $S$ have distinct distance multisets to $S$.
+However, $u=001001$ and $v=010100$ both lie outside $T$ and satisfy
+\[
+\rep(u\mid T)=\rep(v\mid T)=\{\!\{1,2,2,3,4\}\!\}.
+\]
+Thus $S$ resolves the outside vertices whereas $T$ does not.
+The independently written script \texttt{verify\_nonmonotonicity.py} repeats these checks
+using a freshly constructed BFS graph.
+\end{proof}
+This is a concrete example for the stated graph, not a priority claim that
+nonmonotonicity of multiset resolving sets is new in general graph theory.
+
+\section{Reproducibility, limitations and priority status}
+The new C++17 program \texttt{independent\_bfs\_n1\_to8.cpp} proves the
+additional finite entries in Theorem~\ref{thm:table} by BFS and complete lower-cardinality enumeration.
+Its saved log includes the exhaustive $n=8$, $k=5$ count of $3{,}478{,}761$.
+The supplementary script \texttt{verify\_md\_gamma9.py} independently constructs the
+Fibonacci cube as a graph, computes distances using BFS, and verifies the full
+89-vertex unordered-distance certificate; it does not use any frozen verifier code.
+The public reproducibility package contains eight unchanged verification sources extracted
+from the frozen research archives and the v0.4 package. These include the Python BFS
+witness verifier and original C++17 exhaustive search, the independent base-seven C++20
+enumeration, an independent ordered-distance metric-dimension checker, and a second BFS
+verifier. The original archives are retained privately, byte-for-byte. A separate portable
+runner and public manifests accompany the unchanged sources.
+The author reproduced the complete checks on Windows 10 / PowerShell 5.1, including both
+581,106,988-case exhaustions. The saved Windows result ZIP passed independent integrity
+and SHA256 checks for all six payload files; its results agree with the independent
+evidence-audit report. This is independent inspection of author-run saved evidence,
+not an auditor-operated Windows execution. Raw logs and personal paths are excluded
+from the public distribution.
+
+The results do not establish any lower bound matching the supplied upper certificates
+for $n=10$ or $n=11$; no formula is proposed for arbitrary dimensions.
+The quantity $\dim(\G_9)=4$ is presented as a computational comparator,
+\emph{not} as an independently verified new historical discovery.
+Existing research on ordinary resolving parameters and
+Fibonacci graph families, including~\cite{Monica2017}, has not been exhaustively
+checked for all possible implications, nor have all 2026 articles been completely
+screened. Hence novelty remains \textbf{INCONCLUSIVE} and references \textbf{PARTIAL}.
+The supplementary multiset calculation uses the same seven-point witness but a fresh
+BFS implementation; the general inequality $\odim\le\md$ supplies its lower bound.
+These are AI-assisted finite computations and internal audits, not human peer review.
+
+\paragraph{Publication status.} This is \textbf{Preprint v1.0}, released under the
+author's explicit authorization after the publication gates. Independent AI audit:
+\textbf{PASS within the documented scope}. Author-run Windows reproduction and independent
+inspection of its saved evidence: \textbf{PASS}. Human peer review has not been performed.
+Novelty remains \textbf{INCONCLUSIVE}; references remain \textbf{PARTIAL}.
+
+\vspace{1em}
+\noindent\textcopyright{} 2026 Ryutaro Yonezu. All rights reserved.
+
+\begin{thebibliography}{9}\setlength{\itemsep}{2pt}
+\bibitem{GilPons2019} R. Gil-Pons, Y. Ram\'irez-Cruz, R. Trujillo-Rasua, I. G. Yero,
+\emph{Distance-based vertex identification in graphs: The outer multiset dimension},
+Applied Mathematics and Computation \textbf{363} (2019), 124612.
+\url{https://doi.org/10.1016/j.amc.2019.124612}.
+\bibitem{Klavzar2013} S. Klav\v{z}ar,
+\emph{Structure of Fibonacci cubes: A survey},
+Journal of Combinatorial Optimization \textbf{25} (2013), 505--522.
+\url{https://doi.org/10.1007/s10878-011-9433-z}.
+\bibitem{Cabello2011} S. Cabello, D. Eppstein, S. Klav\v{z}ar,
+\emph{The Fibonacci dimension of a graph},
+Electronic Journal of Combinatorics \textbf{18} (2011), P55.
+\url{https://doi.org/10.37236/542}.
+\bibitem{Monica2017} Chris Monica M. and D. Little Femilin Jana,
+\emph{Independent Resolving Number of Fibonacci Cubes and Extended Fibonacci Cubes},
+International Journal of Computer Applications \textbf{165}(7) (2017), 46--48.
+\url{https://doi.org/10.5120/ijca2017913936}.
+\bibitem{Araujo2026} G. Araujo-Pardo, C. Dalf\'o, M. Olsen, M. A. Reyes, R. Simanjuntak,
+\emph{On the outer multiset dimensions of graphs},
+Bolet\'in de la Sociedad Matem\'atica Mexicana \textbf{32} (2026), article 142.
+\url{https://doi.org/10.1007/s40590-026-00973-3}.
+\bibitem{Farhan2026} M. Farhan, S. Klav\v{z}ar, D. Kuziak, I. G. Yero,
+\emph{Multiset resolvability parameters in graphs: A survey with new results and open problems},
+arXiv:2607.10311 (2026). \url{https://arxiv.org/abs/2607.10311}.
+\bibitem{Albejani2026} A. Albejani, Y. Lin, J. Ryan, K. A. Sugeng,
+\emph{A survey on multiset dimension and its variations},
+Statistics, Optimization \& Information Computing \textbf{16}(5) (2026), 4960--4988.
+\url{https://doi.org/10.19139/soic-2310-5070-4062}.
+\end{thebibliography}
+\end{document}
