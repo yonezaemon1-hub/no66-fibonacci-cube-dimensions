@@ -1,0 +1,11 @@
+#include<bits/stdc++.h>
+using namespace std;
+int n,N,k; vector<int> vertices; vector<vector<uint64_t>> bitdelta; vector<pair<int,int>> tasks; atomic<size_t> nextTask(0); atomic<bool> found(false); atomic<unsigned long long> total(0); mutex io;
+struct Worker{vector<uint64_t> sig;vector<uint8_t> selected;vector<int> chosen;uint64_t seen[1024];uint32_t stamps[1024]={};uint32_t epoch=1;unsigned long long tested=0;
+Worker(){sig.assign(N,0);selected.assign(N,0);}
+bool test(){++tested; ++epoch; for(int i=0;i<N;i++) if(!selected[i]){uint64_t v=sig[i];uint32_t h=(v*0x9E3779B97F4A7C15ULL)>>(64-10);while(stamps[h]==epoch && seen[h]!=v)h=(h+1)&1023;if(stamps[h]==epoch)return false;stamps[h]=epoch;seen[h]=v;}return true;}
+void rec(int start,int depth){if(found)return;if(depth==k){if(test()){found=true;lock_guard<mutex>g(io);cerr<<"FOUND witness ";for(int j:chosen){for(int b=n-1;b>=0;b--)cerr<<((vertices[j]>>b)&1);cerr<<" ";}cerr<<endl;}return;}
+for(int j=start;j<=N-(k-depth)&&!found;j++){chosen.push_back(j);selected[j]=1;for(int i=0;i<N;i++)sig[i]+=bitdelta[i][j];rec(j+1,depth+1);for(int i=0;i<N;i++)sig[i]-=bitdelta[i][j];selected[j]=0;chosen.pop_back();}}
+void work(){while(!found){size_t t=nextTask.fetch_add(1);if(t>=tasks.size())break;int a=tasks[t].first,b=tasks[t].second;chosen={a,b};selected[a]=selected[b]=1;for(int i=0;i<N;i++)sig[i]=bitdelta[i][a]+bitdelta[i][b];rec(b+1,2);selected[a]=selected[b]=0;}total+=tested;}
+};
+int main(int argc,char**argv){n=atoi(argv[1]);k=atoi(argv[2]);int threads=atoi(argv[3]);for(int v=0;v<(1<<n);v++)if(!(v&(v<<1)))vertices.push_back(v);N=vertices.size();bitdelta.assign(N,vector<uint64_t>(N));for(int i=0;i<N;i++)for(int j=0;j<N;j++)bitdelta[i][j]=1ull<<(4*__builtin_popcount((unsigned)(vertices[i]^vertices[j])));for(int a=0;a<=N-k;a++)for(int b=a+1;b<=N-k+1;b++)tasks.push_back({a,b});auto st=chrono::steady_clock::now();vector<thread> pool;for(int i=0;i<threads;i++)pool.emplace_back([](){Worker w;w.work();});for(auto &t:pool)t.join();double secs=chrono::duration<double>(chrono::steady_clock::now()-st).count();cerr<<"EXHAUSTED n="<<n<<" N="<<N<<" k="<<k<<" result="<<(found?"FOUND":"NONE")<<" tested="<<total<<" elapsed="<<secs<<" secs"<<endl;return found?2:0;}
