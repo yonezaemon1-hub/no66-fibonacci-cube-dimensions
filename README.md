@@ -4,6 +4,8 @@
 
 Ryutaro Yonezu - Independent Researcher. 13 November 2026.
 
+Research correspondence: [yonezaemon1+research@gmail.com](mailto:yonezaemon1+research@gmail.com)
+
 The Fibonacci cube Gamma_n has the binary words of length n avoiding adjacent ones as its vertices, with an edge for a one-bit change. This computer-assisted preprint determines the following finite values.
 
 | n | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
